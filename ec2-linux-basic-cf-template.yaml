@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  A Sample template building out a simple Linux box
+  
+
+Parameters:
+  InstanceTypeParam: 
+    Type: String
+    Default: t2.micro
+  KeyNameParam:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: "CL1"
+
+  
+
+Resources:
+  MyEC2Instance:
+   Type: AWS::EC2::Instance
+   Properties:
+    ImageId: ami-1e299d7e
+    KeyName: !Ref KeyNameParam
+    InstanceType: !Ref InstanceTypeParam
+  SSHSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+      VpcId: !Ref VpcId
+        GroupDescription: Allow SSH and www
+        SecurityGroupIngress:
+          - CidrIp: 0.0.0.0/0
+            FromPort: 22
+            IpProtocol: tcp
+            ToPort: 22
+  WebSecurityGroup:
+       Type: AWS::EC2::SecurityGroup
+       Properties:
+       VpcId: !Ref VpcId
+         GroupDescription: Allow http
+         SecurityGroupIngress:
+          - CidrIp: 0.0.0.0/0
+            FromPort: 80
+            IpProtocol: tcp
+            ToPort: 80
+      
+    
+    
+
