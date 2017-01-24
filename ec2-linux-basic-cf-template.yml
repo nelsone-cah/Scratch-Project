@@ -12,14 +12,20 @@ Parameters:
 
 Resources:
 
+#Create EC2 Instance
+
   MyEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-1e299d7e
       KeyName: !Ref KeyNameParam
       InstanceType: !Ref InstanceTypeParam
+      
+      #Reference Security Groups Below
       SecurityGroups: [!Ref SSHSecurityGroup, !Ref WebSecurityGroup]
-
+      
+      
+# define securityGroups to be assigned to Instances
   SSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
