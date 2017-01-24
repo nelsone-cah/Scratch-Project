@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: A Sample template building out a simple Linux box
   
+#VPC-ID: vpc-26b83941
+#VPC-Name: CL1-VPC
+
+
 
 Parameters:
   InstanceTypeParam: 
@@ -20,7 +24,7 @@ Resources:
       ImageId: ami-1e299d7e
       KeyName: !Ref KeyNameParam
       InstanceType: !Ref InstanceTypeParam
-      
+      SubnetId: subnet-f6cb6f91 
       #Reference Security Groups Below
       SecurityGroups: [!Ref SSHSecurityGroup, !Ref WebSecurityGroup]
       
