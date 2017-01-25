@@ -5,34 +5,56 @@ Description: A Sample template building out a simple Linux box
 #VPC-Name: CL1-VPC
 
 Parameters:
+  envParam:
+    Type: String
+    #list of allowed params
+    AllowedValues: ['us-west-2']
+            
+            
+#If setting is not defined in VPC, define it here.
   InstanceTypeParam: 
     Type: String
     Default: t2.micro
-  KeyNameParam:
-    Type: AWS::EC2::KeyPair::KeyName
-    Default: "CL1"
+  ImageIdParam:
+    Type: String
+    Default: ami-1e299d7e
+  ServerNameParam:
+    Type: String
+    Default: CL1-Server
     
+    
+# If setting is related to VPC, define it here.
+Mappings:
+  config:
+    us-west-2:
+      SubnetId: subnet-f6cb6f91
+      KeyName: CL1
+      EIP: 52.24.225.9
+      
+      
+#Define resources.  All Resource Attributes should be defined above.
 
 Resources:
-
-#Create EC2 Instance
 
   IPAssoc:
     Type: AWS::EC2::EIPAssociation
     Properties:
       InstanceId: !Ref MyEC2Instance
-      EIP: 52.24.225.9
+      EIP: !FindInMap [config, !Ref envParam, EIP] 
 
   MyEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-1e299d7e
-      KeyName: !Ref KeyNameParam
+      ImageId: !Ref ImageIdParam
+      KeyName: !FindInMap [config, !Ref envParam, KeyName] 
       InstanceType: !Ref InstanceTypeParam
       #Assign the subnet defined in VPC
-      SubnetId: subnet-f6cb6f91 
+      SubnetId: !FindInMap [config, !Ref envParam, SubnetId] 
       #Reference Security Groups Below. When referencing SG's from VPC, it must be done by groupID not name.
       SecurityGroupIds: [!GetAtt SSHSecurityGroup.GroupId, !GetAtt WebSecurityGroup.GroupId]
+      Tags: 
+        - Key: Name
+          Value: !Ref ServerNameParam
       
       
 # define securityGroups to be assigned to Instances
@@ -60,7 +82,11 @@ Resources:
       #Assign the SG to a specific VPC
       VpcId: vpc-26b83941
       
-
+      
+Outputs:
+    ServerIP:
+      Description: Server IP Address
+      Value: !GetAtt MyEC2Instance.PrivateIp
     
     
     
