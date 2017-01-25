@@ -4,8 +4,6 @@ Description: A Sample template building out a simple Linux box
 #VPC-ID: vpc-26b83941
 #VPC-Name: CL1-VPC
 
-
-
 Parameters:
   InstanceTypeParam: 
     Type: String
@@ -13,10 +11,17 @@ Parameters:
   KeyNameParam:
     Type: AWS::EC2::KeyPair::KeyName
     Default: "CL1"
+    
 
 Resources:
 
 #Create EC2 Instance
+
+  IPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref MyEC2Instance
+      EIP: 52.24.225.9
 
   MyEC2Instance:
     Type: AWS::EC2::Instance
@@ -24,9 +29,10 @@ Resources:
       ImageId: ami-1e299d7e
       KeyName: !Ref KeyNameParam
       InstanceType: !Ref InstanceTypeParam
+      #Assign the subnet defined in VPC
       SubnetId: subnet-f6cb6f91 
-      #Reference Security Groups Below
-      SecurityGroups: [!Ref SSHSecurityGroup, !Ref WebSecurityGroup]
+      #Reference Security Groups Below. When referencing SG's from VPC, it must be done by groupID not name.
+      SecurityGroupIds: [!GetAtt SSHSecurityGroup.GroupId, !GetAtt WebSecurityGroup.GroupId]
       
       
 # define securityGroups to be assigned to Instances
@@ -39,6 +45,8 @@ Resources:
           FromPort: 22
           IpProtocol: tcp
           ToPort: 22
+      #Assign the SG to a specific VPC
+      VpcId: vpc-26b83941
             
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -49,6 +57,8 @@ Resources:
           FromPort: 80
           IpProtocol: tcp
           ToPort: 80
+      #Assign the SG to a specific VPC
+      VpcId: vpc-26b83941
       
 
     
