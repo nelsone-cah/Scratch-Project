@@ -1,8 +1,9 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: A Sample template building out a simple Linux box
+Description: "A Sample template building out a simple Linux box"
   
 #VPC-ID: vpc-26b83941
 #VPC-Name: CL1-VPC
+#TODO:  Add creation of VPC
 
 Parameters:
   envParam:
@@ -21,6 +22,9 @@ Parameters:
   ServerNameParam:
     Type: String
     Default: CL1-Server
+  BackupFlagParam:
+    Type: String
+    Default: True
     
     
 # If setting is related to VPC, define it here.
@@ -55,6 +59,8 @@ Resources:
       Tags: 
         - Key: Name
           Value: !Ref ServerNameParam
+        - Key: ScheduledBackup
+          Value: !Ref BackupFlagParam
       
       
 # define securityGroups to be assigned to Instances
